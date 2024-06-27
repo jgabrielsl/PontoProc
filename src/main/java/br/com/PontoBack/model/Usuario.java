@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -29,6 +28,7 @@ public class Usuario {
     private Date dtCriacao;
     private Date dtAtualizacao;
     private boolean isAtivo;
+
 
     @ManyToOne()
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
