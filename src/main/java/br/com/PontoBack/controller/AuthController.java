@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -38,19 +39,24 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity register(@Valid @RequestBody RegisterRequestDTO dto) {
-
+        Date data = new Date();
         Optional<Usuario> user = userRepository.findByEmail(dto.email());
         if (user.isEmpty()) {
-            var newUser = new Usuario();
-            newUser.setSenha(passwordEncoder.encode(dto.senha()));
-            newUser.setEmail(dto.email());
-            newUser.setNome(dto.nome());
-            newUser.setCpf(dto.cpf());
 
+            var usuario = new Usuario();
+            usuario.setSenha(passwordEncoder.encode(dto.senha()));
+            usuario.setEmail(dto.email());
+            usuario.setNome(dto.nome());
+            usuario.setCpf(dto.cpf());
+            usuario.setDepartamento(dto.departamento());
 
-            this.userRepository.save(newUser);
-            String token = tokenService.generateToken(newUser);
-            return ResponseEntity.ok(new ResponseDTO(newUser.getNome(), token));
+            usuario.setDtCriacao(data);
+            usuario.setAtivo(true);
+            usuario.setDtAtualizacao(data);
+
+            this.userRepository.save(usuario);
+            String token = tokenService.generateToken(usuario);
+            return ResponseEntity.ok(new ResponseDTO(usuario.getNome(), token));
         }
 
         return ResponseEntity.badRequest().body("Invalid credentials");

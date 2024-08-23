@@ -21,9 +21,12 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @Column(unique = true, nullable = false)
     private String nome;
+    @Column(unique = true, nullable = false)
     private String email;
     private String senha;
+    @Column(unique = true, nullable = false)
     private String cpf;
     private Date dtCriacao;
     private Date dtAtualizacao;
@@ -31,12 +34,9 @@ public class Usuario {
 
 
     @ManyToOne()
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    @JoinColumn(name = "departamento_id", referencedColumnName = "nome")
     private Departamento departamento;
 
-    @ManyToOne()
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
-    private Role role;
 
     @OneToMany()
     @JoinColumn(name = "ponto_id", referencedColumnName = "id")

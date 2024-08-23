@@ -1,31 +1,44 @@
 package br.com.PontoBack.controller;
 
+import br.com.PontoBack.dto.RegisterDepRequestDTO;
+import br.com.PontoBack.dto.ResponseDepDTO;
 import br.com.PontoBack.model.Departamento;
 import br.com.PontoBack.repository.DepartamentoRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Optional;
 
-@Service
+@RestController
+@RequestMapping("/departamento")
 public class DepartamentoController {
+
     @Autowired
     private DepartamentoRepository departamentoRepository;
 
-    public List<Departamento> findAll() {
-        return departamentoRepository.findAll();
-    }
+    @PostMapping
+    public ResponseEntity register(@Valid @RequestBody RegisterDepRequestDTO dto) {
+        Optional<Departamento> dep = departamentoRepository.findByNome(dto.nome());
+        Date data = new Date();
+        if (dep.isEmpty()) {
 
-    public Optional<Departamento> findById(Long id) {
-        return departamentoRepository.findById(id);
-    }
+            var departamento = new Departamento();
+            departamento.setNome(dto.nome());
 
-    public Departamento save(Departamento departamento) {
-        return departamentoRepository.save(departamento);
-    }
+            departamento.setDtCriacao(data);
+            departamento.setAtivo(true);
+            departamento.setDtAtualizacao(data);
 
-    public void deleteById(Long id) {
-        departamentoRepository.deleteById(id);
+            this.departamentoRepository.save(departamento);
+            return ResponseEntity.ok(new ResponseDepDTO(departamento.getNome()));
+        }
+
+        return ResponseEntity.badRequest().body("Invalid credentials");
     }
 }
